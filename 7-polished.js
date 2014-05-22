@@ -1,4 +1,3 @@
-//START canvas <-.,_.,-·̣°·-.,.,-·̣°·-.,_|\//\\/\\/|
 var cv1 = document.getElementById('canvasFront');
 var cv = document.getElementById('canvasBack');
 var ctx1 = cv1.getContext('2d');
@@ -6,14 +5,12 @@ var ctx = cv.getContext('2d');
 rV = parseInt(Math.random(0)*256);
 gV = parseInt(Math.random(0)*256);
 bV = parseInt(Math.random(0)*256);
-//set all canvases to window size; <-.,_.,-·̣°·-.,.,-·̣°·-.,_|\//\\/\\/|
-cv1.height = cv1.h = window.innerHeight;// saving it into a variable 
-cv1.width  = cv1.w = window.innerWidth;// idk if this is ok =]
+cv1.height = cv1.h = window.innerHeight; 
+cv1.width  = cv1.w = window.innerWidth;
 cv.height = cv.y = window.innerHeight;
 cv.width  = cv.x = window.innerWidth;
 cv.s = cv.x + cv.y;
-var pixelMultiplier = 16;
-
+var pixelMultiplier = 20;
 //grid xA yA
 xA = new Array ( Math.floor(cv.x/pixelMultiplier) );
 yA = new Array ( Math.floor(cv.y/pixelMultiplier) );
@@ -26,8 +23,7 @@ yA = new Array ( Math.floor(cv.y/pixelMultiplier) );
 tId = "timerId";
 // create pixel
 var pixel = new Pixel();
-
-//fit on resize <-.,_.,-·̣°·-.,.,-·̣°·-.,_|\//\\/\\/|
+//fit on resize
 function fitToEdges(){
 	cv1.height = cv1.h = window.innerHeight;
 	cv1.width  = cv1.w = window.innerWidth;
@@ -35,17 +31,32 @@ function fitToEdges(){
 	cv.width  = cv.x = window.innerWidth;
 	drawBackground();
 	drawgrid(pixelMultiplier);
-	xA=undefined; yA=undefined;
+	xA=undefined; yA=undefined; // remake grid
 	xA = new Array ( Math.floor(cv.x/pixelMultiplier) );
 	yA = new Array ( Math.floor(cv.y/pixelMultiplier) );
 	for (var i=0; i<cv.x/pixelMultiplier; i++){
-	for (var b=0; b<cv.y/pixelMultiplier; b++){
-		yA[b]=b*pixelMultiplier;
+		for (var b=0; b<cv.y/pixelMultiplier; b++){
+			yA[b]=b*pixelMultiplier;
 		};
-			xA[i]=i*pixelMultiplier;};
-		
+		xA[i]=i*pixelMultiplier;
+	};
 	pixel.x=xA;
 	pixel.y=yA;
+	showHelp();
+};
+
+function showHelp(){
+	if ( keyH%2 ) {
+		ctx1.font="20px Andale Mono";
+		ctx1.fillStyle="orange";
+		ctx1.fillText("Hello World!"+" help!.",1,50,cv.x/2);
+		ctx1.fillText("-H key toggle help menu.",1,70,cv.x/2);
+		ctx1.fillText("-WASD & arrows move pixel.",1,90,cv.x/2);
+		ctx1.fillText("-tab key toggles auto ball.",1,110,cv.x/2);
+		ctx1.fillText("-1 & 2 inc & dec grid res.",1,130,cv.x/2);
+		ctx1.fillText("-spacebar and mouseclick is pixel balls.",1,150,cv.x/2);
+		ctx1.fillText("-mouswheel works on some browsers, it's just a circle.",1,170,cv.x/2);
+	} else {ctx1.clearRect(0,0,cv.x/2,cv.y)}
 };
 /*input events                      iiiii   nNnN   N
   			                                nN nN  N 
@@ -60,11 +71,11 @@ function captureMouse(e){
 	moY = e.clientY;
 	drawMousePox();
 };
-
+//KEYS!
 document.addEventListener('keydown',checkKeyDown,false);
 document.addEventListener( 'keyup' ,checkKeyUp  ,false);
-
-//move pixel
+tab=0;
+keyH=0;
 function checkKeyDown(e){
 	var keyID = e.keyCode || e.which;//short x-browser
 	if (keyID === 38 || keyID === 87){//up arrow or 'w'
@@ -83,6 +94,16 @@ function checkKeyDown(e){
 		pixel.keyLeft=	true;
 		e.preventDefault();
 	};
+	if (keyID === 32){
+		pixel.keySpace=	true;
+	};
+	if ( keyID === 9 ) {e.preventDefault(); tab++;
+	};
+	if ( keyID === 49 ) {e.preventDefault(); pixelMultiplier++; fitToEdges(); //key '1'
+	};
+	if ( keyID === 50 ) {e.preventDefault(); pixelMultiplier--; fitToEdges(); //key '2'
+	};
+	if ( keyID === 72 ) {keyH++; showHelp(); }
 };
 function checkKeyUp(e){
 	var keyID=(e.keyCode) ? e.keyCode : e.which;//x-browser
@@ -102,8 +123,10 @@ function checkKeyUp(e){
 		pixel.keyLeft=	false;
 		e.preventDefault();
 	};
+	if (keyID === 32){
+		pixel.keySpace=	false;
+	};
 };
-
 //				&&&&& %%%&& &&&&& &&%&& &%&%&
 //		DRAW    &&&&& _________________ &%&%&
 //				&&&&& %%%&& &&&&& &&%&& &%&%&
@@ -115,12 +138,12 @@ function drawBackground(){
 var rad = 1;
 function radius(e){
 	rad += e.wheelDelta/120; rad = Math.abs(rad);drawMousePox();return false;
-
 };
 function drawMousePox(){
 	drawCrc(moX,moY,rad);
 	ctx.fillStyle="rgba(50,200,50,1)"
 	ctx.fillRect(xA[Math.floor(moX/pixelMultiplier)]+1,yA[Math.floor(moY/pixelMultiplier)]+1,pixelMultiplier-1,pixelMultiplier-1);
+	if (tab%2) {	new ball ( (moX/pixelMultiplier) | 0 , (moY/pixelMultiplier) | 0 ) ;};
 };
 
 function drawCrc(a,b,c){
@@ -131,11 +154,8 @@ function drawCrc(a,b,c){
 };
 
 function clickOn(){
-	rV = Math.floor(Math.random(0)*256);
-	gV = Math.floor(Math.random(0)*256);
-	bV = Math.floor(Math.random(0)*256);
 	ctx.fillStyle="rgba("+rV+","+gV+","+bV+",.9)";
-	new ball(Math.floor(moX/pixelMultiplier),Math.floor(moY/pixelMultiplier));
+	new ball ( Math.floor(moX/pixelMultiplier), Math.floor(moY/pixelMultiplier) );
 	return false; 
 };
 //		     ggg     rrrrrrr      i    oooooooo
@@ -144,18 +164,21 @@ function clickOn(){
 //		GGG    GGGg RRRRRRRR     III   DDD     dDD
 //		 GGgggggGG  Rr    RRRR  IIII   DDDDDDDDDDd.
 //
+// see grid xA & yA @ start.
 function drawgrid(pixelMult){
-	for (var i=0;i<cv.x/pixelMult;i++){
-		for(var b=0;b<cv.y/pixelMult;b++){
-				ctx.fillStyle="rgba("+Math.floor(b*pixelMult*(250/cv.y))+",0,"+Math.floor(i*pixelMult*(250/cv.x))+",.45";
-				ctx.fillRect(i*pixelMult+1,b*pixelMult+1,pixelMult-1,pixelMult-1);;
+	var sx = ~~(pixelMult*(250/cv.x));
+	var sy = ~~(pixelMult*(250/cv.y));
+	for ( var i=0; i< xA.length; i++ ) {
+		for ( var b=0; b< yA.length; b++ ) {
+				ctx.fillStyle = "rgba("+ b* sy +",0,"+ i* sx +",.5";
+				ctx.fillRect ( xA[i]+1, yA[b]+1, pixelMult-1, pixelMult-1 ) ;
 		};
 	};
 };
 
 drawBackground();
 gridtId="null";
-gridtId=setInterval( function() {drawgrid(pixelMultiplier)} , 160);
+gridtId=setInterval( function refreshGrid() {drawgrid(pixelMultiplier)} , 170);
 drawgrid(pixelMultiplier);
 
 function ball (x, y) { //thanks MiJyn
@@ -199,6 +222,7 @@ function Pixel (){
 	this.keyDown=	false;
 	this.keyLeft=	false;
 	this.keyRight=	false;
+	this.keySpace=	false;
 	this.yy=0;
 	this.xx=0;
 };
@@ -220,5 +244,8 @@ function keyPress(){
 	if (pixel.keyRight && pixel.xx < pixel.x.length-1){
 		pixel.xx++;
 	};
-}
-pixelTimer = setInterval(function(){pixel.draw()} , 45 );
+	if (pixel.keySpace){
+		new ball ( pixel.x [pixel.xx]/pixelMultiplier , pixel.y [pixel.yy]/pixelMultiplier )
+	};
+};
+pixelTimer = setInterval(function(){pixel.draw()} , 20);
