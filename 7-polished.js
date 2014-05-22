@@ -101,7 +101,7 @@ function checkKeyDown(e){
 	};
 	if ( keyID === 49 ) {e.preventDefault(); pixelMultiplier++; fitToEdges(); //key '1'
 	};
-	if ( keyID === 50 ) {e.preventDefault(); pixelMultiplier--; fitToEdges(); //key '2'
+	if ( keyID === 50 ) {e.preventDefault(); if ( pixelMultiplier>2 ) pixelMultiplier--; fitToEdges(); //key '2'
 	};
 	if ( keyID === 72 ) {keyH++; showHelp(); }
 };
