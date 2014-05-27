@@ -222,6 +222,7 @@ function ball (x, y) {
   };
   this.timer = setInterval(function() {this.gravity()}.bind(this), 60); //thanks MiJyn =]
 };
+
 function Pixel () {
 	this.x = xA;
 	this.y = yA;
